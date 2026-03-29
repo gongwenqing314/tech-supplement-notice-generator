@@ -75,9 +75,12 @@ docs/_build/
 .pybuilder/
 target/
 
+<<<<<<< HEAD
 #tftp files
 tftp_root/
 
+=======
+>>>>>>> 4bcb60b8bd7d525c7711b4c6e8e08ced75a5d8d3
 # Jupyter Notebook
 .ipynb_checkpoints
 
@@ -189,7 +192,11 @@ cython_debug/
 #  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
 #  and can be added to the global gitignore or merged into this file. However, if you prefer, 
 #  you could uncomment the following to ignore the entire vscode folder
+<<<<<<< HEAD
 .vscode/
+=======
+# .vscode/
+>>>>>>> 4bcb60b8bd7d525c7711b4c6e8e08ced75a5d8d3
 
 # Ruff stuff:
 .ruff_cache/
@@ -207,4 +214,8 @@ cython_debug/
 # Marimo
 marimo/_static/
 marimo/_lsp/
+<<<<<<< HEAD
 __marimo__/
+=======
+__marimo__/
+>>>>>>> 4bcb60b8bd7d525c7711b4c6e8e08ced75a5d8d3
