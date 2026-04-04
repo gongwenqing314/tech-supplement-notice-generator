@@ -406,7 +406,12 @@ class MainWindow:
         self.config_menu.add_command(label="模板文件路径", command=self.set_inpath)
         self.config_menu.add_separator()
         self.config_menu.add_command(label="基础配置文件路径", command=self.set_basecfgpath)
-        self.menu.add_command(label="帮助", command=self.show_help)
+        
+        # 创建帮助菜单
+        self.help_menu = tk.Menu(self.menu)
+        self.menu.add_cascade(label="帮助", menu=self.help_menu)
+        self.help_menu.add_command(label="使用说明", command=self.show_help)
+        self.help_menu.add_command(label="可替代字段", command=self.show_replacement_fields)
 
         # 状态栏
         self.status_bar = tk.Label(self.root, text="当前文件: 未选择文件", bd=1, relief=tk.SUNKEN, anchor=tk.W)
@@ -516,8 +521,136 @@ class MainWindow:
         """
         显示帮助信息
         """
-        help_text = "1.根据订单生产工厂选择绵阳或者外协;\n2.选择已经配置好的配置文件或者外协生产数据文件；\n3.选择需提交的各类文件；\n4.点击'生成文档'按钮会自动生成文件并生成新的文件；\n5.按钮后面指示灯为绿色表示无任何风险，为黄色则配置文件存在风险，为红色则配置文件存在错误。"
+        help_text = "1.根据订单生产工厂选择绵阳或者外协;\n2.选择已经配置好的配置文件或者外协生产数据文件；\n3.选择需提交的各类文件；\n4.点击'生成文档'按钮会自动生成文件并生成新的文件；\n5.按钮后面指示灯为绿色表示无任何风险，为黄色则配置文件存在风险，为红色则配置文件存在错误。\n6.点击'可替代字段'按钮可以查看可替代字段说明表。"
         messagebox.showinfo("帮助", help_text)
+    
+    def show_replacement_fields(self):
+        """
+        显示可替代字段映射表
+        """
+        # 创建新窗口
+        dialog = tk.Toplevel(self.root)
+        dialog.title("可替代字段说明")
+        dialog.geometry("700x600")
+        
+        # 设置窗口居中
+        dialog.transient(self.root)
+        dialog.grab_set()
+        x = self.root.winfo_x() + (self.root.winfo_width() - 700) // 2
+        y = self.root.winfo_y() + (self.root.winfo_height() - 600) // 2
+        dialog.geometry(f"700x600+{x}+{y}")
+        
+        # 创建主框架
+        main_frame = tk.Frame(dialog, padx=10, pady=10)
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # 添加标题
+        title_label = tk.Label(main_frame, text="模板可替代字段说明", font=("Arial", 14, "bold"))
+        title_label.pack(pady=(0, 10))
+        
+        # 添加说明文字
+        desc_label = tk.Label(main_frame, text="以下表格列出了Word模板中可使用的替换字段及其含义：", 
+                              font=("Arial", 10), anchor=tk.W)
+        desc_label.pack(fill=tk.X, pady=(0, 10))
+        
+        # 创建树形视图框架
+        tree_frame = tk.Frame(main_frame)
+        tree_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # 创建树形视图
+        columns = ("替换关键字", "中文说明")
+        tree = ttk.Treeview(tree_frame, columns=columns, show="headings", height=20)
+        
+        # 设置列标题
+        tree.heading("替换关键字", text="替换关键字")
+        tree.heading("中文说明", text="中文说明")
+        
+        # 设置列宽
+        tree.column("替换关键字", width=200, anchor=tk.W)
+        tree.column("中文说明", width=450, anchor=tk.W)
+        
+        # 添加滚动条
+        scrollbar_y = tk.Scrollbar(tree_frame, orient=tk.VERTICAL, command=tree.yview)
+        scrollbar_x = tk.Scrollbar(tree_frame, orient=tk.HORIZONTAL, command=tree.xview)
+        tree.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
+        
+        tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
+        scrollbar_x.pack(side=tk.BOTTOM, fill=tk.X)
+        
+        # 定义替换字段映射表
+        replacement_fields = [
+            ("Model", "机型型号"),
+            ("innerVersion", "内控版本号"),
+            ("OrderID", "订单编号"),
+            ("SoftwareVer", "软件版本号"),
+            ("HardwareVer", "硬件版本号"),
+            ("Buildtime", "软件编译时间"),
+            ("MacStart", "MAC地址起始值"),
+            ("MacEnd", "MAC地址结束值"),
+            ("GPONSNStart", "GPON SN起始值"),
+            ("GPONSNEnd", "GPON SN结束值"),
+            ("SNStart", "SN起始值"),
+            ("SNEnd", "SN结束值"),
+            ("BurnFile", "烧录文件名"),
+            ("BFMD5", "烧录文件MD5值"),
+            ("UpgradeFile", "升级文件名"),
+            ("UFMD5", "升级文件MD5值"),
+            ("PartitionFile", "分区文件名"),
+            ("PFMD5", "分区文件MD5值"),
+            ("OrderQty", "订单数量"),
+            ("DeviceIDStart", "设备ID起始值"),
+            ("DeviceIDEnd", "设备ID结束值"),
+            ("CMEIStart", "CMEI起始值"),
+            ("CMEIEnd", "CMEI结束值"),
+            ("IMEIStart", "IMEI起始值"),
+            ("IMEIEnd", "IMEI结束值"),
+            ("AuthIDStart", "认证ID起始值"),
+            ("AuthIDEnd", "认证ID结束值"),
+            ("Market", "市场/运营商"),
+            ("CfgFile", "配置文件名"),
+            ("CfgMD5", "配置文件MD5值"),
+            ("DevKey", "设备密钥状态"),
+            ("HMZJ_Key", "HMZJ密钥状态"),
+            ("DocDate", "文档日期"),
+            ("DocComment", "文档备注"),
+            ("BobTestFile", "BOB测试文件名"),
+            ("BTFMD5", "BOB测试文件MD5值"),
+            ("BobDebugFile", "BOB调试文件名"),
+            ("BDFMD5", "BOB调试文件MD5值"),
+            ("ProjectID", "项目编号"),
+            ("NotifyNum", "原通知号"),
+            ("PMInfo", "项目经理信息"),
+            ("SEInfo", "软件负责人信息"),
+            ("HEInfo", "硬件负责人信息"),
+            ("SDInfo", "结构负责人信息"),
+            ("EXPORTDATA_HEADER", "出库数据文件表头"),
+            ("BobTest2File", "BOB测试文件2名"),
+            ("BTF2MD5", "BOB测试文件2 MD5值"),
+            ("BobDebug2File", "BOB调试文件2名"),
+            ("BDF2MD5", "BOB调试文件2 MD5值"),
+            ("OpticalFile", "光调测文件名"),
+            ("OPTMD5", "光调测文件MD5值"),
+            ("Burn2File", "烧录文件2名"),
+            ("BF2MD5", "烧录文件2 MD5值"),
+            ("Partition2File", "分区文件2名"),
+            ("PF2MD5", "分区文件2 MD5值"),
+            ("StartOfSerial", "序列号起始值"),
+            ("EndOfSerial", "序列号结束值"),
+            ("WiFiMode", "WiFi模式"),
+            ("WiFiEnable", "WiFi使能状态"),
+            ("DefaultWAN", "默认WAN配置"),
+            ("SerialNumStart", "序列号起始值(同StartOfSerial)"),
+            ("SerialNumEnd", "序列号结束值(同EndOfSerial)"),
+        ]
+        
+        # 添加数据到树形视图
+        for keyword, description in replacement_fields:
+            tree.insert("", tk.END, values=(keyword, description))
+        
+        # 添加关闭按钮
+        close_button = tk.Button(main_frame, text="关闭", command=dialog.destroy, width=10)
+        close_button.pack(pady=10)
     
     def reset_all(self):
         """
