@@ -5,7 +5,7 @@ import datetime
 import argparse
 
 # 软件版本号
-VERSION = "2.0.0"
+VERSION = "2.0.1"
 
 from .ui.main_window import MainWindow
 from .data.xml_parser import XMLParser
